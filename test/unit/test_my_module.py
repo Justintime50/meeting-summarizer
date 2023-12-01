@@ -1,5 +1,5 @@
-import project_name
+import meeting_summarizer
 
 
 def test_main():
-    project_name.main()
+    meeting_summarizer.main()
