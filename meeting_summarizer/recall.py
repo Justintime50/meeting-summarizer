@@ -5,6 +5,7 @@ import requests
 
 RECALL_API_KEY = os.getenv('RECALL_API_KEY')
 BOT_ENDPOINT = 'https://api.recall.ai/api/v1/bot'
+TIMEOUT = 30
 
 
 def create_bot(url: str) -> requests.Response:
@@ -29,7 +30,11 @@ def get_meeting_transcript(bot_id: str) -> requests.Response:
 
 def _make_get_request(url: str) -> requests.Response:
     """Make a GET request to the Recall API."""
-    return requests.get(url, headers=_get_headers())
+    return requests.get(
+        url,
+        headers=_get_headers(),
+        timeout=TIMEOUT,
+    )
 
 
 def _make_post_request(url: str, payload: Optional[dict[str, Any]] = None) -> requests.Response:
@@ -38,6 +43,7 @@ def _make_post_request(url: str, payload: Optional[dict[str, Any]] = None) -> re
         url=url,
         json=payload,
         headers=_get_headers(),
+        timeout=TIMEOUT,
     )
 
 

@@ -56,9 +56,9 @@ class MeetingSummarizer:
         transcribe_response = transcribe_meeting(self.summarize)
         if transcribe_response.status_code != 200:
             raise Exception(f"Could not transcribe meeting: {transcribe_response.text}")
-        participant_list = sorted(
-            [participant.get('name') for participant in transcribe_response.json().get('meeting_participants', [])]
-        )
+        participant_list = sorted([
+            participant.get('name') for participant in transcribe_response.json().get('meeting_participants', [])
+        ])
 
         chat_message_response = get_chat_messages(self.summarize)
         if chat_message_response.status_code != 200:
