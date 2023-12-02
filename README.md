@@ -86,7 +86,7 @@ If using Slack, you will need to follow their [Quickstart Guide](https://api.sla
 # Create a bot and send it to a meeting by supplying the meeting URL 
 venv/bin/python meeting_summarizer/cli.py --create "https://us04web.zoom.us/j/123"
 
-# Summarize the meeting once it is complete (should wait a few minutes after a meeting finishes) by supplying the Bot ID output when created
+# Summarize the meeting once it is complete by supplying the bot ID output when the meeting was created
 venv/bin/python meeting_summarizer/cli.py --summarize "123"
 ```
 
