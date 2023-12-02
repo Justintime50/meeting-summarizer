@@ -7,13 +7,13 @@ SLACKBOT_TOKEN = os.getenv('SLACKBOT_TOKEN')
 SLACK_CHANNEL = os.getenv('SLACK_CHANNEL')
 
 
-def send_slack_message(message: str):
+def send_slack_message(title: str, message: str):
     """Send the meeting summary as a Slack message via a Slackbot."""
     slack_client = slack_sdk.WebClient(SLACKBOT_TOKEN)
 
     summary_file = slack_client.files_upload_v2(
-        title="Meeting Summary",
-        filename="meeting_summary.txt",
+        title=f"{title} Summary",
+        filename=f"{title.lower().replace(' ', '_')}_summary.txt",
         content=message,
     )
     file_object: dict[str, Any] = summary_file.get("file", {})
@@ -21,5 +21,5 @@ def send_slack_message(message: str):
 
     slack_client.chat_postMessage(
         channel=SLACK_CHANNEL,  # type:ignore
-        text=f"A meeting happened! Check out the summary: {file_url}",
+        text=f"A meeting happened! Check out the summary for {title}: {file_url}",
     )

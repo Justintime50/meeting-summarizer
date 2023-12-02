@@ -28,11 +28,11 @@ class MeetingSummarizer:
             output = self.send_bot_to_meeting()
             print(output)
         elif self.summarize:
-            summary = self.summarize_meeting()
+            title, summary = self.summarize_meeting()
             print(summary)
 
             if self.slack:
-                send_slack_message(summary)
+                send_slack_message(title, summary)
 
     def send_bot_to_meeting(self) -> str:
         """Sends a Recall AI bot to a meeting."""
@@ -45,7 +45,7 @@ class MeetingSummarizer:
 
         return output
 
-    def summarize_meeting(self) -> str:
+    def summarize_meeting(self) -> list[str]:
         """Summarize a Zoom, Google Meet, etc meeting with Recall AI. We do this by doing the following:
         1. Kick off a transcription job (can use same response to grab participant list)
         2. Get the list of chat messages
@@ -56,9 +56,12 @@ class MeetingSummarizer:
         transcribe_response = transcribe_meeting(self.summarize)
         if transcribe_response.status_code != 200:
             raise Exception(f"Could not transcribe meeting: {transcribe_response.text}")
-        participant_list = sorted([
-            participant.get('name') for participant in transcribe_response.json().get('meeting_participants', [])
-        ])
+        meeting_json = transcribe_response.json()
+        participant_list = sorted(
+            [participant.get('name') for participant in meeting_json.get('meeting_participants', [])]
+        )
+        meeting_title = meeting_json['meeting_metadata'].get('title')
+        video_url = meeting_json.get('video_url')
 
         chat_message_response = get_chat_messages(self.summarize)
         if chat_message_response.status_code != 200:
@@ -72,13 +75,15 @@ class MeetingSummarizer:
             raise Exception(f"Could not retrieve meeting transcript: {transcript_response.text}")
         transcript = transcript_response.json()
 
-        summary = build_summary(participant_list, transcript, chat_messages)
-        save_file(summary)
+        summary = build_summary(meeting_title, video_url, participant_list, transcript, chat_messages)
+        save_file(meeting_title, summary)
 
-        return summary
+        return meeting_title, summary
 
 
 def build_summary(
+    meeting_title: str,
+    video_url: str,
     participant_list: list[str],
     transcript: list[dict[str, Any]],
     chat_messages: list[dict[str, Any]],
@@ -86,13 +91,14 @@ def build_summary(
     """Builds a string containing all the details of the meeting summary. This string summary can then
     be used to populate a file and send off to Slack.
     """
-    summary = 'Meeting Summary'
+    summary = f'{meeting_title} Summary'
+    summary += f'\n\nMeeting Video: {video_url}'
     participants_string = "\n- ".join(participant for participant in participant_list)
     summary += f'\n\nParticipants:\n- {participants_string}'
-    summary += '\n\nAudio Transcript:\n'
+    summary += '\n\nAudio Transcript:'
     # TODO: Calculate timestamps for speaking transcript entries (they are in seconds since start of meeting)
     for speaker in transcript:
-        summary += f'- {speaker.get("speaker")}: '
+        summary += f'\n- {speaker.get("speaker")}: '
         words = speaker.get('words', [])
         for word in words:
             summary += f'{word.get("text")} '
@@ -105,7 +111,7 @@ def build_summary(
     return summary
 
 
-def save_file(content: str) -> None:
+def save_file(filename: str, content: str) -> None:
     """Saves a string to a text file."""
-    with open('meeting_summary.txt', 'w') as filename:
-        filename.write(content)
+    with open(f'{filename.lower().replace(" ", "_")}.txt', 'w') as filepath:
+        filepath.write(content)

@@ -21,20 +21,16 @@ REQUIREMENTS = [
 DEV_REQUIREMENTS = [
     'bandit == 1.7.*',
     'black == 23.*',
-    'build == 0.10.*',
     'flake8 == 6.*',
     'isort == 5.*',
     'mypy == 1.5.*',
-    'pytest == 7.*',
-    'pytest-cov == 4.*',
-    'twine == 4.*',
     'types-requests',
 ]
 
 setuptools.setup(
     name='meeting-summarizer',
     version=version,
-    description='Your project description here',
+    description='Summarize your meetings with the power of Recall AI.',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='http://github.com/justintime50/meeting-summarizer',
