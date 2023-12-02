@@ -18,9 +18,6 @@ Have you ever missed a meeting or wanted to reference the sidebar chat but no lo
 ## Install
 
 ```bash
-# Install tool
-pip3 install meeting_summarizer
-
 # Install locally
 just install
 ```
@@ -28,7 +25,11 @@ just install
 ## Usage
 
 ```bash
-venv/bin/python my_script.py
+# Create a bot and send it to a meeting by supplying the meeting URL 
+venv/bin/python meeting_summarizer/cli.py --create https://us04web.zoom.us/j/123
+
+# Summarize the meeting once it is complete (should wait a few minutes after a meeting finishes) by supplying the Bot ID output when created
+venv/bin/python meeting_summarizer/cli.py --summarize "123"
 ```
 
 ## Development

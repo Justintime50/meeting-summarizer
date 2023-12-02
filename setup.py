@@ -14,6 +14,7 @@ with open('meeting_summarizer/_version.py', 'r') as version_file:
         raise RuntimeError('Unable to find version string!')
 
 REQUIREMENTS = [
+    'slack_sdk == 3.*',
     'requests == 2.*',
 ]
 
@@ -27,6 +28,7 @@ DEV_REQUIREMENTS = [
     'pytest == 7.*',
     'pytest-cov == 4.*',
     'twine == 4.*',
+    'types-requests',
 ]
 
 setuptools.setup(
