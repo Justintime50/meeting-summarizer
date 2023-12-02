@@ -45,7 +45,7 @@ class MeetingSummarizer:
 
         return output
 
-    def summarize_meeting(self) -> list[str]:
+    def summarize_meeting(self) -> tuple[str, str]:
         """Summarize a Zoom, Google Meet, etc meeting with Recall AI. We do this by doing the following:
         1. Kick off a transcription job (can use same response to grab participant list)
         2. Get the list of chat messages
@@ -57,10 +57,10 @@ class MeetingSummarizer:
         if transcribe_response.status_code != 200:
             raise Exception(f"Could not transcribe meeting: {transcribe_response.text}")
         meeting_json = transcribe_response.json()
-        participant_list = sorted(
-            [participant.get('name') for participant in meeting_json.get('meeting_participants', [])]
-        )
-        meeting_title = meeting_json['meeting_metadata'].get('title')
+        participant_list = sorted([
+            participant.get('name') for participant in meeting_json.get('meeting_participants', [])
+        ])
+        meeting_title: str = meeting_json['meeting_metadata'].get('title')
         video_url = meeting_json.get('video_url')
 
         chat_message_response = get_chat_messages(self.summarize)
