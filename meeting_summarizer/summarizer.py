@@ -23,13 +23,11 @@ class MeetingSummarizer:
 
     def run(self):
         """Run the command-line tool to summarize meetings."""
-        # TODO: Validate params and matrix
         if self.create:
             output = self.send_bot_to_meeting()
             print(output)
         elif self.summarize:
             title, summary = self.summarize_meeting()
-            print(summary)
 
             if self.slack:
                 send_slack_message(title, summary)
@@ -51,7 +49,6 @@ class MeetingSummarizer:
         2. Get the list of chat messages
         3. Get the meeting transcript
         4. Build the summary string and save it to a file
-        5. Send the file to Slack
         """
         transcribe_response = transcribe_meeting(self.summarize)
         if transcribe_response.status_code != 200:

@@ -29,12 +29,20 @@ class MeetingSummarizerCli:
         parser.parse_args(namespace=self)
 
     def run(self):
+        self._validate_params()
         meeting_summarizer = MeetingSummarizer(
             create=self.create,
             summarize=self.summarize,
             slack=self.slack,
         )
         meeting_summarizer.run()
+
+    def _validate_params(self):
+        """Validates all CLI params."""
+        if not self.create and not self.summarize:
+            raise ValueError('A CLI flag must be passed to use this tool!')
+        if self.create and self.slack:
+            raise ValueError('Cannot use Slack flag when creating a bot!')
 
 
 def main():
